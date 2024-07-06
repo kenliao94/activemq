@@ -55,7 +55,7 @@
         <property name="constraint" ref="adminSecurityConstraint" />
         <property name="pathSpec" value="*.action" />
     </bean>
-    
+
     <bean id="rewriteHandler" class="org.eclipse.jetty.rewrite.handler.RewriteHandler">
         <property name="rules">
             <list>
@@ -70,6 +70,11 @@
                   <property name="value" value="1; mode=block"/>
                 </bean>
                 <bean id="header" class="org.eclipse.jetty.rewrite.handler.HeaderPatternRule">
+                    <property name="pattern" value="*"/>
+                    <property name="name" value="Cache-Control"/>
+                    <property name="value" value="no-store"/>
+                </bean>
+                <bean id="header" class="org.eclipse.jetty.rewrite.handler.HeaderPatternRule">
                   <property name="pattern" value="*"/>
                   <property name="name" value="X-Content-Type-Options"/>
                   <property name="value" value="nosniff"/>
@@ -77,7 +82,7 @@
             </list>
         </property>
     </bean>
-    
+
     <bean id="secHandlerCollection" class="org.eclipse.jetty.server.handler.HandlerCollection">
         <property name="handlers">
             <list>
