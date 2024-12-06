@@ -156,19 +156,59 @@ public final class OpenTypeSupport {
         }
 
         @Override
-        public Map<String, Object> getFields(Object o) throws OpenDataException {
+        public Map<String, Object> getFields(Object o) throws OpenDataException { //TODO(ken): consider throwing it here
             ActiveMQMessage m = (ActiveMQMessage)o;
             Map<String, Object> rc = super.getFields(o);
-            rc.put("JMSCorrelationID", m.getJMSCorrelationID());
-            rc.put("JMSDestination", "" + m.getJMSDestination());
-            rc.put("JMSMessageID", m.getJMSMessageID());
-            rc.put("JMSReplyTo",toString(m.getJMSReplyTo()));
-            rc.put("JMSType", m.getJMSType());
-            rc.put("JMSDeliveryMode", m.getJMSDeliveryMode() == DeliveryMode.PERSISTENT ? "PERSISTENT" : "NON-PERSISTENT");
-            rc.put("JMSExpiration", m.getJMSExpiration());
-            rc.put("JMSPriority", m.getJMSPriority());
-            rc.put("JMSRedelivered", m.getJMSRedelivered());
-            rc.put("JMSTimestamp", new Date(m.getJMSTimestamp()));
+            try {
+                rc.put("JMSCorrelationID", m.getJMSCorrelationID());
+            } catch (JMSException e) {
+                rc.put("JMSCorrelationID", "");
+            }
+            try {
+                rc.put("JMSDestination", "" + m.getJMSDestination());
+            } catch (JMSException e) {
+                rc.put("JMSDestination", "");
+            }
+            try {
+                rc.put("JMSMessageID", m.getJMSMessageID());
+            } catch (JMSException e) {
+                rc.put("JMSMessageID", "");
+            }
+            try {
+                rc.put("JMSReplyTo",toString(m.getJMSReplyTo()));
+            } catch (JMSException e) {
+                rc.put("JMSReplyTo", "");
+            }
+            try {
+                rc.put("JMSType", m.getJMSType());
+            } catch (JMSException e) {
+                rc.put("JMSType", "");
+            }
+            try {
+                rc.put("JMSDeliveryMode", m.getJMSDeliveryMode() == DeliveryMode.PERSISTENT ? "PERSISTENT" : "NON-PERSISTENT");
+            } catch (JMSException e) {
+                rc.put("JMSDeliveryMode", "");
+            }
+            try {
+                rc.put("JMSExpiration", m.getJMSExpiration());
+            } catch (JMSException e) {
+                rc.put("JMSExpiration", "");
+            }
+            try {
+                rc.put("JMSPriority", m.getJMSPriority());
+            } catch (JMSException e) {
+                rc.put("JMSPriority", "");
+            }
+            try {
+                rc.put("JMSRedelivered", m.getJMSRedelivered());
+            } catch (JMSException e) {
+                rc.put("JMSRedelivered", "");
+            }
+            try {
+                rc.put("JMSTimestamp", new Date(m.getJMSTimestamp()));
+            } catch (JMSException e) {
+                rc.put("JMSTimestamp", "");
+            }
             rc.put(CompositeDataConstants.JMSXGROUP_ID, m.getGroupID());
             rc.put(CompositeDataConstants.JMSXGROUP_SEQ, m.getGroupSequence());
             rc.put(CompositeDataConstants.JMSXUSER_ID, m.getUserID());

@@ -53,6 +53,8 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
 
     protected transient Callback acknowledgeCallback;
 
+    private boolean isMessageAccessibleAndMutable = true;
+
     @Override
     public byte getDataStructureType() {
         return DATA_STRUCTURE_TYPE;
@@ -110,12 +112,14 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
 
     @Override
     public void clearBody() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         setContent(null);
         readOnlyBody = false;
     }
 
     @Override
-    public String getJMSMessageID() {
+    public String getJMSMessageID() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         MessageId messageId = this.getMessageId();
         if (messageId == null) {
             return null;
@@ -132,6 +136,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
      */
     @Override
     public void setJMSMessageID(String value) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         if (value != null) {
             try {
                 MessageId id = new MessageId(value);
@@ -158,6 +163,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
      * @throws JMSException
      */
     public void setJMSMessageID(ProducerId producerId, long producerSequenceId) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         MessageId id = null;
         try {
             id = new MessageId(producerId, producerSequenceId);
@@ -168,32 +174,38 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
     }
 
     @Override
-    public long getJMSTimestamp() {
+    public long getJMSTimestamp() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         return this.getTimestamp();
     }
 
     @Override
-    public void setJMSTimestamp(long timestamp) {
+    public void setJMSTimestamp(long timestamp) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         this.setTimestamp(timestamp);
     }
 
     @Override
-    public String getJMSCorrelationID() {
+    public String getJMSCorrelationID() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         return this.getCorrelationId();
     }
 
     @Override
-    public void setJMSCorrelationID(String correlationId) {
+    public void setJMSCorrelationID(String correlationId) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         this.setCorrelationId(correlationId);
     }
 
     @Override
     public byte[] getJMSCorrelationIDAsBytes() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         return encodeString(this.getCorrelationId());
     }
 
     @Override
     public void setJMSCorrelationIDAsBytes(byte[] correlationId) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         this.setCorrelationId(decodeString(correlationId));
     }
 
@@ -225,83 +237,103 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
     }
 
     @Override
-    public Destination getJMSReplyTo() {
+    public Destination getJMSReplyTo() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         return this.getReplyTo();
     }
 
     @Override
     public void setJMSReplyTo(Destination destination) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         this.setReplyTo(ActiveMQDestination.transform(destination));
     }
 
     @Override
-    public Destination getJMSDestination() {
+    public Destination getJMSDestination() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         return this.getDestination();
     }
 
     @Override
     public void setJMSDestination(Destination destination) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         this.setDestination(ActiveMQDestination.transform(destination));
     }
 
     @Override
-    public int getJMSDeliveryMode() {
+    public int getJMSDeliveryMode() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         return this.isPersistent() ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT;
     }
 
     @Override
-    public void setJMSDeliveryMode(int mode) {
+    public void setJMSDeliveryMode(int mode) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         this.setPersistent(mode == DeliveryMode.PERSISTENT);
     }
 
     @Override
-    public boolean getJMSRedelivered() {
+    public boolean getJMSRedelivered() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         return this.isRedelivered();
     }
 
     @Override
-    public void setJMSRedelivered(boolean redelivered) {
+    public void setJMSRedelivered(boolean redelivered) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         this.setRedelivered(redelivered);
     }
 
     @Override
-    public String getJMSType() {
+    public String getJMSType() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         return this.getType();
     }
 
     @Override
-    public void setJMSType(String type) {
+    public void setJMSType(String type) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         this.setType(type);
     }
 
     @Override
-    public long getJMSExpiration() {
+    public long getJMSExpiration() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         return this.getExpiration();
     }
 
     @Override
-    public void setJMSExpiration(long expiration) {
+    public void setJMSExpiration(long expiration) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         this.setExpiration(expiration);
     }
 
     @Override
-    public int getJMSPriority() {
+    public int getJMSPriority() throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         return this.getPriority();
     }
 
     @Override
-    public void setJMSPriority(int priority) {
+    public void setJMSPriority(int priority) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         this.setPriority((byte) priority);
     }
 
     @Override
     public void clearProperties() {
+        try {
+            checkIsMessageAccessibleAndMutable();
+        } catch (JMSException e) {
+            return;
+        }
         super.clearProperties();
         readOnlyProperties = false;
     }
 
     @Override
     public boolean propertyExists(String name) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         try {
             return (this.getProperties().containsKey(name) || getObjectProperty(name)!= null);
         } catch (IOException e) {
@@ -349,13 +381,13 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
     }
 
     interface PropertySetter {
-        void set(Message message, Object value) throws MessageFormatException;
+        void set(Message message, Object value) throws MessageFormatException, JMSException;
     }
 
     static {
         JMS_PROPERTY_SETERS.put("JMSXDeliveryCount", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 Integer rc = (Integer) TypeConversionSupport.convert(value, Integer.class);
                 if (rc == null) {
                     throw new MessageFormatException("Property JMSXDeliveryCount cannot be set from a " + value.getClass().getName() + ".");
@@ -365,7 +397,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         });
         JMS_PROPERTY_SETERS.put("JMSXGroupID", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 String rc = (String) TypeConversionSupport.convert(value, String.class);
                 if (rc == null) {
                     throw new MessageFormatException("Property JMSXGroupID cannot be set from a " + value.getClass().getName() + ".");
@@ -375,7 +407,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         });
         JMS_PROPERTY_SETERS.put("JMSXGroupSeq", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 Integer rc = (Integer) TypeConversionSupport.convert(value, Integer.class);
                 if (rc == null) {
                     throw new MessageFormatException("Property JMSXGroupSeq cannot be set from a " + value.getClass().getName() + ".");
@@ -385,7 +417,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         });
         JMS_PROPERTY_SETERS.put("JMSCorrelationID", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 String rc = (String) TypeConversionSupport.convert(value, String.class);
                 if (rc == null) {
                     throw new MessageFormatException("Property JMSCorrelationID cannot be set from a " + value.getClass().getName() + ".");
@@ -395,7 +427,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         });
         JMS_PROPERTY_SETERS.put("JMSDeliveryMode", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 Integer rc = null;
                 try {
                     rc = (Integer) TypeConversionSupport.convert(value, Integer.class);
@@ -423,7 +455,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         });
         JMS_PROPERTY_SETERS.put("JMSExpiration", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 Long rc = (Long) TypeConversionSupport.convert(value, Long.class);
                 if (rc == null) {
                     throw new MessageFormatException("Property JMSExpiration cannot be set from a " + value.getClass().getName() + ".");
@@ -433,7 +465,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         });
         JMS_PROPERTY_SETERS.put("JMSPriority", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 Integer rc = (Integer) TypeConversionSupport.convert(value, Integer.class);
                 if (rc == null) {
                     throw new MessageFormatException("Property JMSPriority cannot be set from a " + value.getClass().getName() + ".");
@@ -443,7 +475,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         });
         JMS_PROPERTY_SETERS.put("JMSRedelivered", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 Boolean rc = (Boolean) TypeConversionSupport.convert(value, Boolean.class);
                 if (rc == null) {
                     throw new MessageFormatException("Property JMSRedelivered cannot be set from a " + value.getClass().getName() + ".");
@@ -453,7 +485,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         });
         JMS_PROPERTY_SETERS.put("JMSReplyTo", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 ActiveMQDestination rc = (ActiveMQDestination) TypeConversionSupport.convert(value, ActiveMQDestination.class);
                 if (rc == null) {
                     throw new MessageFormatException("Property JMSReplyTo cannot be set from a " + value.getClass().getName() + ".");
@@ -463,7 +495,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         });
         JMS_PROPERTY_SETERS.put("JMSTimestamp", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 Long rc = (Long) TypeConversionSupport.convert(value, Long.class);
                 if (rc == null) {
                     throw new MessageFormatException("Property JMSTimestamp cannot be set from a " + value.getClass().getName() + ".");
@@ -473,7 +505,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         });
         JMS_PROPERTY_SETERS.put("JMSType", new PropertySetter() {
             @Override
-            public void set(Message message, Object value) throws MessageFormatException {
+            public void set(Message message, Object value) throws MessageFormatException, JMSException {
                 String rc = (String) TypeConversionSupport.convert(value, String.class);
                 if (rc == null) {
                     throw new MessageFormatException("Property JMSType cannot be set from a " + value.getClass().getName() + ".");
@@ -489,7 +521,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
     }
 
     public void setObjectProperty(String name, Object value, boolean checkReadOnly) throws JMSException {
-
+        checkIsMessageAccessibleAndMutable();
         if (checkReadOnly) {
             checkReadOnlyProperties();
         }
@@ -571,6 +603,7 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
 
     @Override
     public Object getObjectProperty(String name) throws JMSException {
+        checkIsMessageAccessibleAndMutable();
         if (name == null) {
             throw new NullPointerException("Property name cannot be null");
         }
@@ -813,4 +846,13 @@ public class ActiveMQMessage extends Message implements org.apache.activemq.Mess
         return null;
     }
 
+    public void setIsMessageAccessibleAndMutable(boolean isMessageAccessibleAndMutable) {
+        this.isMessageAccessibleAndMutable = isMessageAccessibleAndMutable;
+    }
+
+    protected void checkIsMessageAccessibleAndMutable() throws JMSException {
+        if (!isMessageAccessibleAndMutable) {
+            throw new JMSException("Can't access or modify the Message object before the CompletionListener has been invoked since this message is send asynchronously");
+        }
+    }
 }
