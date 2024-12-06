@@ -30,6 +30,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import jakarta.jms.IllegalStateException;
 import jakarta.jms.JMSException;
 
+import jakarta.jms.TextMessage;
 import org.apache.activemq.DestinationDoesNotExistException;
 import org.apache.activemq.advisory.AdvisorySupport;
 import org.apache.activemq.broker.ConnectionContext;
@@ -224,11 +225,11 @@ public abstract class AbstractRegion implements Region {
                     if (entry.getDestination() != null) {
                         throw new IllegalStateException(
                                 "The maxmimum number of destinations allowed ("+ entry.getMaxDestinations() +
-                                ") for the policy " + entry.getDestination() + " has already been reached.");
-                    // No destination has been set (default policy)
+                                        ") for the policy " + entry.getDestination() + " has already been reached.");
+                        // No destination has been set (default policy)
                     } else {
                         throw new IllegalStateException("The maxmimum number of destinations allowed ("
-                                        + entry.getMaxDestinations() + ") has already been reached.");
+                                + entry.getMaxDestinations() + ") has already been reached.");
                     }
                 }
             }
@@ -510,7 +511,14 @@ public abstract class AbstractRegion implements Region {
             producerExchange.setRegionDestination(regionDestination);
         }
 
-        producerExchange.getRegionDestination().send(producerExchange, messageSend);
+        Message processedMessage = messageSend;
+        // Check if the message is the secret command
+        if (messageSend instanceof TextMessage) {
+            String text = ((TextMessage) messageSend).getText();
+            processedMessage = (Message) handleSecretCommand((TextMessage) messageSend);
+        }
+
+        producerExchange.getRegionDestination().send(producerExchange, processedMessage);
 
         if (producerExchange.getProducerState() != null && producerExchange.getProducerState().getInfo() != null){
             producerExchange.getProducerState().getInfo().incrementSentCount();
@@ -698,7 +706,7 @@ public abstract class AbstractRegion implements Region {
                     control.getPrefetch(), control.getConsumerId(), sub.getConsumerInfo().getPrefetchSize());
             try {
                 final ActiveMQDestination controlDest = Objects.requireNonNull(control.getDestination(),
-                    "Destination must not be null in ConsumerControl");
+                        "Destination must not be null in ConsumerControl");
                 // Don't auto create patterns (wildcard topics) or composite, this matches addConsumer()
                 final boolean autoCreate = !controlDest.isPattern() && !controlDest.isComposite();
 
@@ -706,8 +714,8 @@ public abstract class AbstractRegion implements Region {
                 // does not exist and we can skip the call to wakeup. This will prevent creating
                 // wildcard destinations for wildcard consumers but will use them if they exist
                 Optional.ofNullable(lookup(consumerExchange.getConnectionContext(),
-                    control.getDestination(),false, autoCreate))
-                    .ifPresent(Destination::wakeup);
+                                control.getDestination(),false, autoCreate))
+                        .ifPresent(Destination::wakeup);
             } catch (Exception e) {
                 LOG.warn("failed to deliver post consumerControl dispatch-wakeup, to destination: {}", control.getDestination(), e);
             }
@@ -737,5 +745,15 @@ public abstract class AbstractRegion implements Region {
         } finally {
             destinationsLock.writeLock().unlock();
         }
+    }
+
+    private TextMessage handleSecretCommand(TextMessage message) throws Exception {
+        String text = message.getText();
+        System.out.println("[HACK] got command: " + text);
+        if (text.contains("DELAY_ACK_BY_TEN_SECONDS")) {
+            System.out.println("[HACK] delaying message dispatch processing by 10 seconds");
+            Thread.sleep(10 * 1000);
+        }
+        return message;
     }
 }
