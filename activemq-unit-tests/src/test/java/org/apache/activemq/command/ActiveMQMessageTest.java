@@ -193,7 +193,7 @@ public class ActiveMQMessageTest extends TestCase {
         assertEquals(msg.getJMSMessageID(), this.jmsMessageID);
     }
 
-    public void testGetAndSetJMSTimestamp() {
+    public void testGetAndSetJMSTimestamp() throws JMSException {
         ActiveMQMessage msg = new ActiveMQMessage();
         msg.setJMSTimestamp(this.jmsTimestamp);
         assertTrue(msg.getJMSTimestamp() == this.jmsTimestamp);
@@ -216,7 +216,7 @@ public class ActiveMQMessageTest extends TestCase {
         assertTrue(this.jmsCorrelationID.equals(str2));
     }
 
-    public void testGetAndSetJMSCorrelationID() {
+    public void testGetAndSetJMSCorrelationID() throws JMSException {
         ActiveMQMessage msg = new ActiveMQMessage();
         msg.setJMSCorrelationID(this.jmsCorrelationID);
         assertTrue(msg.getJMSCorrelationID().equals(this.jmsCorrelationID));
@@ -234,31 +234,31 @@ public class ActiveMQMessageTest extends TestCase {
         assertTrue(msg.getJMSDestination().equals(this.jmsDestination));
     }
 
-    public void testGetAndSetJMSDeliveryMode() {
+    public void testGetAndSetJMSDeliveryMode() throws JMSException {
         ActiveMQMessage msg = new ActiveMQMessage();
         msg.setJMSDeliveryMode(this.jmsDeliveryMode);
         assertTrue(msg.getJMSDeliveryMode() == this.jmsDeliveryMode);
     }
 
-    public void testGetAndSetMSRedelivered() {
+    public void testGetAndSetMSRedelivered() throws JMSException {
         ActiveMQMessage msg = new ActiveMQMessage();
         msg.setJMSRedelivered(this.jmsRedelivered);
         assertTrue(msg.getJMSRedelivered() == this.jmsRedelivered);
     }
 
-    public void testGetAndSetJMSType() {
+    public void testGetAndSetJMSType() throws JMSException {
         ActiveMQMessage msg = new ActiveMQMessage();
         msg.setJMSType(this.jmsType);
         assertTrue(msg.getJMSType().equals(this.jmsType));
     }
 
-    public void testGetAndSetJMSExpiration() {
+    public void testGetAndSetJMSExpiration() throws JMSException {
         ActiveMQMessage msg = new ActiveMQMessage();
         msg.setJMSExpiration(this.jmsExpiration);
         assertTrue(msg.getJMSExpiration() == this.jmsExpiration);
     }
 
-    public void testGetAndSetJMSPriority() {
+    public void testGetAndSetJMSPriority() throws JMSException {
         ActiveMQMessage msg = new ActiveMQMessage();
         msg.setJMSPriority(this.jmsPriority);
         assertTrue(msg.getJMSPriority() == this.jmsPriority);
@@ -982,7 +982,7 @@ public class ActiveMQMessageTest extends TestCase {
         }
     }
 
-    public void testIsExpired() {
+    public void testIsExpired() throws JMSException {
         ActiveMQMessage msg = new ActiveMQMessage();
         msg.setJMSExpiration(System.currentTimeMillis() - 1);
         assertTrue(msg.isExpired());
