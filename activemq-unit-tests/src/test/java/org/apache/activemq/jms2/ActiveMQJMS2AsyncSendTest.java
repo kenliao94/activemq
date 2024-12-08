@@ -8,19 +8,7 @@ import java.util.Enumeration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import jakarta.jms.CompletionListener;
-import jakarta.jms.Destination;
-import jakarta.jms.JMSConsumer;
-import jakarta.jms.JMSContext;
-import jakarta.jms.JMSException;
-import jakarta.jms.JMSProducer;
-import jakarta.jms.JMSRuntimeException;
-import jakarta.jms.Message;
-import jakarta.jms.Queue;
-import jakarta.jms.QueueBrowser;
-import jakarta.jms.Session;
-import jakarta.jms.TextMessage;
-import jakarta.jms.Topic;
+import jakarta.jms.*;
 
 import org.apache.activemq.ActiveMQContext;
 import org.apache.activemq.command.ActiveMQTextMessage;
@@ -53,13 +41,9 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
                 session.createQueue(methodNameDestinationName),
                 session.createTextMessage("Test-" + methodNameDestinationName),
                 completionListener);
-        try {
-            boolean status = latch.await(10L, TimeUnit.SECONDS);
-            if (!status) {
-                fail("the completion listener was not triggered within 10 seconds or threw an exception");
-            }
-        } catch (InterruptedException e) {
-            throw new Exception(e);
+        boolean status = latch.await(10L, TimeUnit.SECONDS);
+        if (!status) {
+            fail("the completion listener was not triggered within 10 seconds or threw an exception");
         }
     }
 
@@ -87,13 +71,9 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
             };
             jmsProducer.setAsync(completionListener);
             jmsProducer.send(destination, textBody);
-            try {
-                boolean status = latch.await(10L, TimeUnit.SECONDS);
-                if (!status) {
-                    fail("the completion listener was not triggered within 10 seconds or threw an exception");
-                }
-            } catch (InterruptedException e) {
-                throw new Exception(e);
+            boolean status = latch.await(10L, TimeUnit.SECONDS);
+            if (!status) {
+                fail("the completion listener was not triggered within 10 seconds or threw an exception");
             }
         } catch (Exception e) {
             fail(e.getMessage());
@@ -125,13 +105,9 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
 
             jmsProducer.setAsync(completionListener);
             jmsProducer.send(destination, textBody);
-            try {
-                boolean status = latch.await(10L, TimeUnit.SECONDS);
-                if (!status) {
-                    fail("the completion listener onException method was not triggered within 10 seconds");
-                }
-            } catch (InterruptedException e) {
-                fail(e.getMessage());
+            boolean status = latch.await(10L, TimeUnit.SECONDS);
+            if (!status) {
+                fail("the completion listener onException method was not triggered within 10 seconds");
             }
         } catch (Exception e) {
             fail(e.getMessage());
@@ -177,13 +153,9 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
                 expectedOrderedMessages.add(textBody);
                 jmsProducer.send(destination, textBody);
             }
-            try {
-                boolean status = latch.await(10L, TimeUnit.SECONDS);
-                if (!status) {
-                    fail("the completion listener was not triggered within 10 seconds or threw an exception");
-                }
-            } catch (InterruptedException e) {
-                throw new Exception(e);
+            boolean status = latch.await(10L, TimeUnit.SECONDS);
+            if (!status) {
+                fail("the completion listener was not triggered within 10 seconds or threw an exception");
             }
             for (int i = 0; i < num_msgs; i++) {
                 String got = actualOrderedMessages.get(i);
@@ -222,13 +194,9 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
 
             jmsProducer.setAsync(completionListener);
             jmsProducer.send(destination, textBody);
-            try {
-                boolean status = latch.await(10L, TimeUnit.SECONDS);
-                if (!status) {
-                    fail("the completion listener onException was not triggered within 10 seconds or threw an exception");
-                }
-            } catch (InterruptedException e) {
-                throw new Exception(e);
+            boolean status = latch.await(10L, TimeUnit.SECONDS);
+            if (!status) {
+                fail("the completion listener onException was not triggered within 10 seconds or threw an exception");
             }
         } catch (Exception e) {
             fail(e.getMessage());
@@ -256,13 +224,9 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
         };
         messageProducer.send(session.createQueue(methodNameDestinationName),
                 session.createTextMessage("Test-" + methodNameDestinationName), completionListener);
-        try {
-            boolean status = latch.await(10L, TimeUnit.SECONDS);
-            if (!status) {
-                fail("the completion listener onException was not triggered within 10 seconds or threw an exception");
-            }
-        } catch (InterruptedException e) {
-            throw new Exception(e);
+        boolean status = latch.await(10L, TimeUnit.SECONDS);
+        if (!status) {
+            fail("the completion listener onException was not triggered within 10 seconds or threw an exception");
         }
     }
 
@@ -292,13 +256,9 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
 
             jmsProducer.setAsync(completionListener);
             jmsProducer.send(destination, textBody);
-            try {
-                boolean status = latch.await(10L, TimeUnit.SECONDS);
-                if (!status) {
-                    fail("the completion listener onException was not triggered within 10 seconds or threw an exception");
-                }
-            } catch (InterruptedException e) {
-                throw new Exception(e);
+            boolean status = latch.await(10L, TimeUnit.SECONDS);
+            if (!status) {
+                fail("the completion listener onException was not triggered within 10 seconds or threw an exception");
             }
         } catch (Exception e) {
             fail(e.getMessage());
@@ -331,13 +291,9 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
 
             jmsProducer.setAsync(completionListener);
             jmsProducer.send(destination, textBody);
-            try {
-                boolean status = latch.await(10L, TimeUnit.SECONDS);
-                if (!status) {
-                    fail("the completion listener onException was not triggered within 10 seconds or threw an exception");
-                }
-            } catch (InterruptedException e) {
-                throw new Exception(e);
+            boolean status = latch.await(10L, TimeUnit.SECONDS);
+            if (!status) {
+                fail("the completion listener onException was not triggered within 10 seconds or threw an exception");
             }
         } catch (Exception e) {
             fail(e.getMessage());
@@ -474,13 +430,9 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
             jmsProducer.send(destination, message);
             // Trying to get the message header
             int deliveryMode = message.getJMSDeliveryMode();
-            try {
-                boolean status = latch.await(10L, TimeUnit.SECONDS);
-                if (!status) {
-                    fail("the completion listener was not triggered within 10 seconds or threw an exception");
-                }
-            } catch (InterruptedException e) {
-                fail(e.getMessage());
+            boolean status = latch.await(10L, TimeUnit.SECONDS);
+            if (!status) {
+                fail("the completion listener was not triggered within 10 seconds or threw an exception");
             }
         } catch (Exception e) {
             fail(e.getMessage());
@@ -489,12 +441,49 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
 
     @Test
     public void testCompletionListenerThreadingRestriction_spec7_3_7() throws Exception {
+        // (https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#restrictions-on-threading)
+        // The session can continue to be used by current application thread. Session is used one thread at a time (CompletionListener, Application thread ... etc)
+        CountDownLatch latch = new CountDownLatch(1);
+        CompletionListener completionListener = new CompletionListener() {
+            @Override
+            public void onCompletion(Message message) {
+                try {
+                    // Simulate busy processing of the message for 5 seconds.
+                    Thread.sleep(5 * 1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                latch.countDown();
+            }
 
+            @Override
+            public void onException(Message message, Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        messageProducer.send(
+                session.createQueue(methodNameDestinationName),
+                session.createTextMessage("Test-" + methodNameDestinationName),
+                completionListener);
+        MessageConsumer consumer = session.createConsumer(session.createQueue(methodNameDestinationName));
+        Message msg = consumer.receive(2 * 1000);
+        if (msg == null) {
+            fail("session in the original thread of control was dedicated to the thread of control of CompletionListener");
+        }
+        String gotTextBody = ((TextMessage) msg).getText();
+        if (!gotTextBody.equals("Test-" + methodNameDestinationName)) {
+            fail("receive message is different than the one originally sent");
+        }
+        boolean status = latch.await(10L, TimeUnit.SECONDS);
+        if (!status) {
+            fail("the completion listener was not triggered within 10 seconds or threw an exception");
+        }
     }
 
     @Test
     public void testCompletionListenerInvokedInDifferentThread_spec7_3_8() throws Exception {
-        // According to 7.3.7. Restrictions on threading (https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#restrictions-on-threading)
+        // https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#use-of-the-completionlistener-by-the-jakarta-messaging-provider
         // The CompletionListener has to be invoked in different thread
         try(JMSContext jmsContext = activemqConnectionFactory.createContext(DEFAULT_JMS_USER, DEFAULT_JMS_PASS, Session.AUTO_ACKNOWLEDGE)) {
             assertNotNull(jmsContext);
@@ -524,13 +513,9 @@ public class ActiveMQJMS2AsyncSendTest extends ActiveMQJMS2TestBase{
 
             jmsProducer.setAsync(completionListener);
             jmsProducer.send(destination, textBody);
-            try {
-                boolean status = latch.await(10L, TimeUnit.SECONDS);
-                if (!status) {
-                    fail("the completion listener was not triggered within 10 seconds or threw an exception");
-                }
-            } catch (InterruptedException e) {
-                throw new Exception(e);
+            boolean status = latch.await(10L, TimeUnit.SECONDS);
+            if (!status) {
+                fail("the completion listener was not triggered within 10 seconds or threw an exception");
             }
         } catch (Exception e) {
             fail(e.getMessage());
