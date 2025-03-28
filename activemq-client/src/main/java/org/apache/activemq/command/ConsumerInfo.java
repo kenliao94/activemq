@@ -30,7 +30,7 @@ import org.apache.activemq.state.CommandVisitor;
  * @openwire:marshaller code="5"
  *
  */
-public class ConsumerInfo extends BaseCommand implements TransientInitializer {
+public class ConsumerInfo extends BaseCommand implements TransientInitializer { //here
 
     public static final byte DATA_STRUCTURE_TYPE = CommandTypes.CONSUMER_INFO;
 
@@ -54,6 +54,8 @@ public class ConsumerInfo extends BaseCommand implements TransientInitializer {
     protected byte priority;
     protected BrokerId[] brokerPath;
     protected boolean optimizedAcknowledge;
+    protected boolean durable;
+    protected boolean shared;
     // used by the broker
     protected transient int currentPrefetchSize;
     // if true, the consumer will not send range
@@ -111,10 +113,8 @@ public class ConsumerInfo extends BaseCommand implements TransientInitializer {
             }
             info.networkConsumerIds.addAll(networkConsumerIds);
         }
-    }
-
-    public boolean isDurable() {
-        return subscriptionName != null;
+        info.durable = durable;
+        info.shared = shared;
     }
 
     @Override
@@ -489,6 +489,24 @@ public class ConsumerInfo extends BaseCommand implements TransientInitializer {
             }
         }
     }
+
+    public void setIsDurable(boolean durable) {
+        this.durable = durable;
+    }
+
+    public boolean isDurable() {
+        return durable;
+    }
+
+    public void setIsShared(boolean shared) {
+        this.shared = shared;
+    }
+
+    public boolean isShared() {
+        return shared;
+    }
+
+
 
     public void setLastDeliveredSequenceId(long lastDeliveredSequenceId) {
         this.lastDeliveredSequenceId  = lastDeliveredSequenceId;
