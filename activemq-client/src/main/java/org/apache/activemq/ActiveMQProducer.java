@@ -62,6 +62,9 @@ public class ActiveMQProducer implements JMSProducer {
         this.activemqMessageProducer = activemqMessageProducer;
     }
 
+    // Async
+    private CompletionListener completionListener = null;
+
     @Override
     public JMSProducer send(Destination destination, Message message) {
         try {
@@ -86,7 +89,7 @@ public class ActiveMQProducer implements JMSProducer {
                     message.setObjectProperty(propertyEntry.getKey(), propertyEntry.getValue());
                 }
             }
-
+            // Change this to take completionListener
             activemqMessageProducer.send(destination, message, getDeliveryMode(), getPriority(), getTimeToLive(), getDisableMessageID(), getDisableMessageTimestamp(), null);
         } catch (JMSException e) {
             throw JMSExceptionSupport.convertToJMSRuntimeException(e);
@@ -253,12 +256,13 @@ public class ActiveMQProducer implements JMSProducer {
 
     @Override
     public JMSProducer setAsync(CompletionListener completionListener) {
-        throw new UnsupportedOperationException("setAsync(CompletionListener) is not supported");
+        this.completionListener = completionListener;
+        return this;
     }
 
     @Override
     public CompletionListener getAsync() {
-        throw new UnsupportedOperationException("getAsync() is not supported");
+        return this.completionListener;
     }
 
     @Override

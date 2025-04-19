@@ -67,9 +67,9 @@ import org.slf4j.LoggerFactory;
  * JMS API does not define the accuracy provided.
  *
  *
- * @see jakarta.jms.TopicPublisher
- * @see jakarta.jms.QueueSender
- * @see jakarta.jms.Session#createProducer
+ * @see TopicPublisher
+ * @see QueueSender
+ * @see Session#createProducer
  */
 public class ActiveMQMessageProducer extends ActiveMQMessageProducerSupport implements StatsCapable, Disposable {
 
@@ -216,7 +216,7 @@ public class ActiveMQMessageProducer extends ActiveMQMessageProducerSupport impl
      *                 specified.
      * @throws InvalidDestinationException if a client uses this method with an
      *                 invalid destination.
-     * @see jakarta.jms.Session#createProducer
+     * @see Session#createProducer
      * @since 1.1
      */
     @Override
@@ -227,35 +227,51 @@ public class ActiveMQMessageProducer extends ActiveMQMessageProducerSupport impl
     /**
      *
      * @param message the message to send
-     * @param CompletionListener to callback
+     * @param completionListener to callback
      * @throws JMSException if the JMS provider fails to send the message due to
      *                 some internal error.
      * @throws UnsupportedOperationException if an invalid destination is
      *                 specified.
      * @throws InvalidDestinationException if a client uses this method with an
      *                 invalid destination.
-     * @see jakarta.jms.Session#createProducer
+     * @see Session#createProducer
      * @since 2.0
      */
     @Override
     public void send(Message message, CompletionListener completionListener) throws JMSException {
-        throw new UnsupportedOperationException("send(Message, CompletionListener) is not supported");
+        this.send(this.getDestination(),
+                message,
+                this.defaultDeliveryMode,
+                this.defaultPriority,
+                this.defaultTimeToLive,
+                completionListener);
     }
 
     @Override
     public void send(Message message, int deliveryMode, int priority, long timeToLive,
                       CompletionListener completionListener) throws JMSException {
-        throw new UnsupportedOperationException("send(Message, deliveryMode, priority, timetoLive, CompletionListener) is not supported");
+        this.send(this.getDestination(),
+                message,
+                deliveryMode,
+                priority,
+                timeToLive,
+                completionListener);
     }
 
     @Override
     public void send(Destination destination, Message message, CompletionListener completionListener) throws JMSException {
-        throw new UnsupportedOperationException("send(Destination, Message, CompletionListener) is not supported");
+        this.send(destination,
+                message,
+                this.defaultDeliveryMode,
+                this.defaultPriority,
+                this.defaultTimeToLive,
+                completionListener);
     }
 
     @Override
     public void send(Destination destination, Message message, int deliveryMode, int priority, long timeToLive,
                      CompletionListener completionListener) throws JMSException {
+        // Change here
         throw new UnsupportedOperationException("send(Destination, Message, deliveryMode, priority, timetoLive, CompletionListener) is not supported");
     }
 
@@ -290,7 +306,7 @@ public class ActiveMQMessageProducer extends ActiveMQMessageProducerSupport impl
     }
 
     public void send(Destination destination, Message message, int deliveryMode, int priority, long timeToLive, boolean disableMessageID, boolean disableMessageTimestamp, AsyncCallback onComplete) throws JMSException {
-
+        // Referenced this
         checkClosed();
         if (destination == null) {
             if (info.getDestination() == null) {
@@ -310,14 +326,14 @@ public class ActiveMQMessageProducer extends ActiveMQMessageProducerSupport impl
         if (dest == null) {
             throw new JMSException("No destination specified");
         }
-
+        // What is message transformer
         if (transformer != null) {
             Message transformedMessage = transformer.producerTransform(session, this, message);
             if (transformedMessage != null) {
                 message = transformedMessage;
             }
         }
-
+        // What is producerWindow
         if (producerWindow != null) {
             try {
                 producerWindow.waitForSpace();
@@ -326,8 +342,10 @@ public class ActiveMQMessageProducer extends ActiveMQMessageProducerSupport impl
             }
         }
 
+        // Send is actually handle on this.session
         this.session.send(this, dest, message, deliveryMode, priority, timeToLive, disableMessageID, disableMessageTimestamp, producerWindow, sendTimeout, onComplete);
 
+        // Keeping tack ?
         stats.onMessage();
     }
 
