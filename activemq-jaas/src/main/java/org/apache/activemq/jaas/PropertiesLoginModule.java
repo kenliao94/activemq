@@ -86,14 +86,16 @@ public class PropertiesLoginModule extends PropertiesLoader implements LoginModu
         if (user == null) {
             throw new FailedLoginException("user name is null");
         }
-        String password = users.getProperty(user);
+        String encodedPassword = users.getProperty(user);
 
-        if (password == null) {
+        if (encodedPassword == null) {
             throw new FailedLoginException("User does exist");
         }
-        if (!password.equals(new String(tmpPassword))) {
+
+        if (!EncryptionSupport.comparePassword(new String(tmpPassword), encodedPassword)) {
             throw new FailedLoginException("Password does not match");
         }
+
         succeeded = true;
 
         if (debug) {
