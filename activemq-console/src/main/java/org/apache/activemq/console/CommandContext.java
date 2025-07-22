@@ -165,6 +165,18 @@ public final class CommandContext {
         }
         formatter.printInfo(info);
     }
+    
+    /**
+     * Print an error message
+     *
+     * @param error - error message to print
+     */
+    public void printError(String error) {
+        if (formatter == null) {
+            throw new IllegalStateException("No OutputFormatter specified. Use GlobalWriter.instantiate(OutputFormatter).");
+        }
+        formatter.printInfo("ERROR: " + error);
+    }
 
     /**
      * Print an exception message

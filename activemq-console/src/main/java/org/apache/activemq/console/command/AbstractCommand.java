@@ -60,8 +60,26 @@ public abstract class AbstractCommand implements Command {
 
             // Run the specified task
         } else {
-            runTask(tokens);
+            // Validate command options before running the task
+            try {
+                validateOptions();
+                runTask(tokens);
+            } catch (IllegalArgumentException e) {
+                context.printError("Error: " + e.getMessage());
+                printHelp();
+                throw e;
+            }
         }
+    }
+    
+    /**
+     * Validate command options before execution.
+     * This method should be overridden by subclasses that need validation.
+     * 
+     * @throws IllegalArgumentException if validation fails
+     */
+    protected void validateOptions() throws IllegalArgumentException {
+        // Default implementation does nothing
     }
 
     /**

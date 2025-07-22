@@ -41,7 +41,6 @@ import org.apache.activemq.console.command.store.protobuf.MessagePB;
 import org.apache.activemq.console.command.store.protobuf.QueueEntryPB;
 import org.apache.activemq.console.command.store.protobuf.QueuePB;
 import org.apache.activemq.openwire.OpenWireFormat;
-import org.apache.activemq.store.MessageRecoveryContext;
 import org.apache.activemq.store.MessageRecoveryListener;
 import org.apache.activemq.store.MessageStore;
 import org.apache.activemq.store.PersistenceAdapter;
@@ -174,8 +173,8 @@ public class StoreBackup {
                 destRecord.setBindingData(new UTF8Buffer(json));
                 manager.store_queue(destRecord);
 
-                MessageRecoveryContext.Builder builder = 
-                        new MessageRecoveryContext.Builder()
+                MessageRecoveryContextBuilder builder = 
+                        new MessageRecoveryContextBuilder()
                             .maxMessageCountReturned(count)
                             .messageRecoveryListener(new MessageRecoveryListener() {
 
@@ -211,15 +210,15 @@ public class StoreBackup {
 
                 if(startMsgId != null || endMsgId != null) {
                     logger.info("Backing up from startMsgId:{} to endMsgId:{} ", startMsgId, endMsgId);
-                    queue.recoverMessages(builder.endMessageId(endMsgId).startMessageId(startMsgId).build());
+                    queue.recover(builder.endMessageId(endMsgId).startMessageId(startMsgId).build());
                 } else if(indexesList != null) {
                     logger.info("Backing up using indexes count:{}", indexesList.size());
                     for(int idx : indexesList) {
-                        queue.recoverMessages(builder.maxMessageCountReturned(1).offset(idx).build());
+                        queue.recover(builder.maxMessageCountReturned(1).offset(idx).build());
                     }
                 } else if(offset != null) {
                     logger.info("Backing up from offset:{} count:{} ", offset, count);
-                    queue.recoverMessages(builder.offset(offset).build());
+                    queue.recover(builder.offset(offset).build());
                 } else {
                     queue.recover(builder.build());
                 }

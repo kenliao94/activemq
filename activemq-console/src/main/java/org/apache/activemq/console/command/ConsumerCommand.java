@@ -29,6 +29,9 @@ import java.util.concurrent.CountDownLatch;
 
 public class ConsumerCommand extends AbstractCommand {
     private static final Logger LOG = LoggerFactory.getLogger(ConsumerCommand.class);
+    
+    // Import the validator
+    private org.apache.activemq.console.command.validator.ConsumerCommandValidator validator;
 
     String brokerUrl = ActiveMQConnectionFactory.DEFAULT_BROKER_URL;
     String user = ActiveMQConnectionFactory.DEFAULT_USER;
@@ -43,6 +46,14 @@ public class ConsumerCommand extends AbstractCommand {
     int ackMode = Session.AUTO_ACKNOWLEDGE;
     int parallelThreads = 1;
     boolean bytesAsText;
+
+    @Override
+    protected void validateOptions() throws IllegalArgumentException {
+        if (validator == null) {
+            validator = new org.apache.activemq.console.command.validator.ConsumerCommandValidator(this);
+        }
+        validator.validate();
+    }
 
     @Override
     protected void runTask(List<String> tokens) throws Exception {

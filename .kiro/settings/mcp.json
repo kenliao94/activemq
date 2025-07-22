@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "awslabs.amazon-mq-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.amazon-mq-mcp-server@latest"],
+      "env": {
+        "AWS_PROFILE": "default",
+        "AWS_REGION": "us-east-1"
+      }
+    }
+  }
+}
