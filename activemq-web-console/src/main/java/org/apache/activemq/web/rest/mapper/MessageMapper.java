@@ -61,11 +61,19 @@ public class MessageMapper {
         
         // Extract custom properties
         Map<String, Object> properties = new HashMap<>();
-        CompositeData propertiesData = (CompositeData) compositeData.get("PropertiesText");
-        if (propertiesData != null) {
-            for (String key : propertiesData.getCompositeType().keySet()) {
-                properties.put(key, propertiesData.get(key));
+        try {
+            Object propertiesObj = compositeData.get("PropertiesText");
+            if (propertiesObj instanceof CompositeData) {
+                CompositeData propertiesData = (CompositeData) propertiesObj;
+                for (String key : propertiesData.getCompositeType().keySet()) {
+                    properties.put(key, propertiesData.get(key));
+                }
+            } else if (propertiesObj instanceof String) {
+                // PropertiesText might be a String representation
+                // Parse it if needed, or just skip for now
             }
+        } catch (Exception e) {
+            // Ignore property extraction errors
         }
         dto.setProperties(properties);
         

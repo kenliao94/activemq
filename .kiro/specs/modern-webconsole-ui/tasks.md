@@ -182,7 +182,7 @@
   - Display success/error notifications using React Hot Toast
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 11.2_
 
-- [ ] 21. Implement Connection list and detail pages
+- [x] 21. Implement Connection list and detail pages
   - Create `src/pages/Connections/ConnectionList.tsx` with connection table
   - Display connection ID, remote address, user, client ID, and connection time
   - Add action to close connection with confirmation

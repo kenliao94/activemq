@@ -37,7 +37,9 @@ import jakarta.jms.MessageProducer;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.TabularData;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -68,13 +70,24 @@ public class MessageService {
                 throw new ApiException(404, "Queue not found: " + queueName);
             }
             
-            // Browse all messages
-            CompositeData[] messages = queue.browse();
+            // Use browseAsTable which returns TabularData with message information
+            TabularData result = queue.browseAsTable();
             List<MessageDTO> messageDTOs = new ArrayList<>();
             
-            if (messages != null) {
-                for (CompositeData message : messages) {
-                    messageDTOs.add(messageMapper.toMessageDTO(message));
+            if (result != null) {
+                // TabularData contains a collection of CompositeData values
+                Collection<?> values = result.values();
+                for (Object value : values) {
+                    try {
+                        if (value instanceof CompositeData) {
+                            messageDTOs.add(messageMapper.toMessageDTO((CompositeData) value));
+                        } else {
+                            LOG.debug("Skipping non-CompositeData value: " + value.getClass().getName());
+                        }
+                    } catch (Exception e) {
+                        LOG.warn("Failed to convert message to DTO: " + e.getMessage());
+                        // Continue with next message
+                    }
                 }
             }
             

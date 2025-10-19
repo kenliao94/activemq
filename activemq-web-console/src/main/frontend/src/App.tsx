@@ -12,6 +12,7 @@ import { QueueGraph } from './pages/Queues/QueueGraph'
 import { TopicList, TopicDetail } from './pages/Topics'
 import { TopicGraph } from './pages/Topics/TopicGraph'
 import { MessageBrowser, MessageDetail, SendMessage } from './pages/Messages'
+import { ConnectionList, ConnectionDetail } from './pages/Connections'
 
 function App() {
   // Use basename only in production (when served from /modern path)
@@ -49,7 +50,8 @@ function App() {
             <Route path="messages" element={<MessageBrowser />} />
             <Route path="messages/:queueName/:messageId" element={<MessageDetail />} />
             <Route path="messages/send" element={<SendMessage />} />
-            <Route path="connections" element={<DashboardPlaceholder />} />
+            <Route path="connections" element={<ConnectionList />} />
+            <Route path="connections/:id" element={<ConnectionDetail />} />
             <Route path="settings" element={<DashboardPlaceholder />} />
           </Route>
         </Routes>
