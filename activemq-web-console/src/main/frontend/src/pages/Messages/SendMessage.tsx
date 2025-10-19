@@ -134,10 +134,10 @@ export const SendMessage: React.FC = () => {
     try {
       if (destinationType === 'queue') {
         const response = await queueService.getQueues(0, 1000);
-        setDestinations(response.content.map((q) => q.name));
+        setDestinations(response.data.map((q: { name: string }) => q.name));
       } else {
         const response = await topicService.getTopics(0, 1000);
-        setDestinations(response.content.map((t) => t.name));
+        setDestinations(response.data.map((t: { name: string }) => t.name));
       }
     } catch (error) {
       console.error('Failed to load destinations:', error);

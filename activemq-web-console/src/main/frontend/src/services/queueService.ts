@@ -20,7 +20,7 @@ export interface Queue {
 
 // Paged response interface
 export interface PagedResponse<T> {
-  content: T[];
+  data: T[];
   page: number;
   pageSize: number;
   totalElements: number;

@@ -30,7 +30,6 @@ import {
   ChevronLeft as ChevronLeftIcon,
   ExpandLess,
   ExpandMore,
-  ShowChart as ChartIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUIStore } from '../../stores/uiStore';
@@ -57,19 +56,13 @@ const navigationItems: NavItem[] = [
     id: 'queues',
     label: 'Queues',
     icon: <QueueIcon />,
-    children: [
-      { id: 'queue-list', label: 'Queue List', icon: <QueueIcon />, path: '/queues' },
-      { id: 'queue-graphs', label: 'Queue Graphs', icon: <ChartIcon />, path: '/queues/graphs' },
-    ],
+    path: '/queues',
   },
   {
     id: 'topics',
     label: 'Topics',
     icon: <TopicIcon />,
-    children: [
-      { id: 'topic-list', label: 'Topic List', icon: <TopicIcon />, path: '/topics' },
-      { id: 'topic-graphs', label: 'Topic Graphs', icon: <ChartIcon />, path: '/topics/graphs' },
-    ],
+    path: '/topics',
   },
   {
     id: 'messages',

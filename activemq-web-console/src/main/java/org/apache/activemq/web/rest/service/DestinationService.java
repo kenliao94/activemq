@@ -102,15 +102,15 @@ public class DestinationService {
      */
     public void createQueue(String name) {
         try {
-            // Creating a queue by sending a message or accessing it will auto-create it
-            // For now, we'll just verify it doesn't exist and let the broker auto-create
+            // Check if queue already exists
             QueueViewMBean existingQueue = brokerFacade.getQueue(name);
             if (existingQueue != null) {
                 throw new ApiException(409, "Queue already exists: " + name);
             }
             
-            // The queue will be auto-created when first accessed
-            LOG.info("Queue creation requested: " + name);
+            // Create the queue using broker admin
+            brokerFacade.getBrokerAdmin().addQueue(name);
+            LOG.info("Queue created: " + name);
         } catch (ApiException e) {
             throw e;
         } catch (Exception e) {
@@ -251,14 +251,15 @@ public class DestinationService {
      */
     public void createTopic(String name) {
         try {
-            // Creating a topic by sending a message or accessing it will auto-create it
+            // Check if topic already exists
             TopicViewMBean existingTopic = brokerFacade.getTopic(name);
             if (existingTopic != null) {
                 throw new ApiException(409, "Topic already exists: " + name);
             }
             
-            // The topic will be auto-created when first accessed
-            LOG.info("Topic creation requested: " + name);
+            // Create the topic using broker admin
+            brokerFacade.getBrokerAdmin().addTopic(name);
+            LOG.info("Topic created: " + name);
         } catch (ApiException e) {
             throw e;
         } catch (Exception e) {

@@ -78,7 +78,7 @@ export function MessageBrowser() {
 
     try {
       const response = await messageService.browseMessages(queueName, page, pageSize);
-      setMessages(response.content || []);
+      setMessages(response.data || []);
       setTotalCount(response.totalElements || 0);
       setLastUpdate(Date.now());
     } catch (err) {

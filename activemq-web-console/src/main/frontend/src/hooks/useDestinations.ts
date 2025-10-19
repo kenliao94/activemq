@@ -129,7 +129,7 @@ export function useDestinations(options: UseDestinationsOptions = {}) {
     try {
       const response = await queueService.getQueues(page, pageSize);
       // Convert service Queue type to store Queue type
-      const queues: Queue[] = response.content.map(q => ({
+      const queues: Queue[] = response.data.map(q => ({
         ...q,
         type: 'queue' as const,
         dispatchCount: 0,
@@ -158,7 +158,7 @@ export function useDestinations(options: UseDestinationsOptions = {}) {
     try {
       const response = await topicService.getTopics(page, pageSize);
       // Convert service Topic type to store Topic type
-      const topics: Topic[] = response.content.map(t => ({
+      const topics: Topic[] = response.data.map(t => ({
         ...t,
         type: 'topic' as const,
         subscriptionCount: 0,
