@@ -103,7 +103,7 @@ public class ActiveMQContext implements JMSContext {
 
     @Override
     public JMSProducer createProducer() {
-        return new ActiveMQProducer(this, getCreatedActiveMQMessageProducer());
+        return new ActiveMQProducer(this, getCreatedActiveMQMessageProducer()); // Here is how ActiveMQMessageProducer
     }
 
     @Override

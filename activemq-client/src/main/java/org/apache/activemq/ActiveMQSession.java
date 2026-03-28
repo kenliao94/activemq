@@ -1943,6 +1943,7 @@ public class ActiveMQSession implements Session, QueueSession, TopicSession, Sta
      */
     protected void send(ActiveMQMessageProducer producer, ActiveMQDestination destination, Message message, int deliveryMode, int priority, long timeToLive,
                         MemoryUsage producerWindow, int sendTimeout, AsyncCallback onComplete) throws JMSException {
+        // mark this
         send(producer, destination, message, deliveryMode, priority, timeToLive, producer.getDisableMessageID(), producer.getDisableMessageID(), producerWindow, sendTimeout, onComplete);
     }
 
