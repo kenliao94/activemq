@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import jakarta.jms.CompletionListener;
 import jakarta.jms.Connection;
 import jakarta.jms.ConnectionConsumer;
 import jakarta.jms.ConnectionMetaData;
@@ -46,6 +47,7 @@ import jakarta.jms.ExceptionListener;
 import jakarta.jms.IllegalStateException;
 import jakarta.jms.InvalidDestinationException;
 import jakarta.jms.JMSException;
+//import jakarta.jms.Message;
 import jakarta.jms.Queue;
 import jakarta.jms.QueueConnection;
 import jakarta.jms.QueueSession;
@@ -224,6 +226,7 @@ public class ActiveMQConnection implements Connection, TopicConnection, QueueCon
      * @param factoryStats
      * @throws Exception
      */
+    // Mark
     protected ActiveMQConnection(final Transport transport, IdGenerator clientIdGenerator, IdGenerator connectionIdGenerator, JMSStatsImpl factoryStats) throws Exception {
 
         this.transport = transport;
@@ -1396,7 +1399,36 @@ public class ActiveMQConnection implements Connection, TopicConnection, QueueCon
      * @throws JMSException
      */
     public void syncSendPacket(final Command command, final AsyncCallback onComplete) throws JMSException {
-        if(onComplete==null) {
+        CompletionListener completionListener = null;
+        if (onComplete != null) {
+            completionListener = new CompletionListener() {
+                @Override
+                public void onCompletion(jakarta.jms.Message message) {
+                    onComplete.onSuccess();
+                }
+
+                @Override
+                public void onException(jakarta.jms.Message message, Exception e) {
+                    if (e instanceof JMSException) {
+                        onComplete.onException((JMSException) e);
+                    } else {
+                        onComplete.onException(new JMSException(e.getMessage()));
+                    }
+                }
+            };
+        }
+        syncSendPacket(command, completionListener);
+    }
+
+    /**
+     * Send a packet through a Connection - for internal use only
+     *
+     * @param command
+     *
+     * @throws JMSException
+     */
+    public void syncSendPacket(final Command command, final CompletionListener completionListener) throws JMSException {
+        if(completionListener==null) {
             syncSendPacket(command);
         } else {
             if (isClosed()) {
@@ -1419,7 +1451,7 @@ public class ActiveMQConnection implements Connection, TopicConnection, QueueCon
                         }
                         if (exception != null) {
                             if ( exception instanceof JMSException) {
-                                onComplete.onException((JMSException) exception);
+                                completionListener.onException((jakarta.jms.Message) command, (JMSException) exception);
                             } else {
                                 if (isClosed() || closing.get()) {
                                     LOG.debug("Received an exception but connection is closing");
@@ -1439,11 +1471,11 @@ public class ActiveMQConnection implements Connection, TopicConnection, QueueCon
                                     }
                                 }
                                 if (jmsEx != null) {
-                                    onComplete.onException(jmsEx);
+                                    completionListener.onException((jakarta.jms.Message) command, jmsEx);
                                 }
                             }
                         } else {
-                            onComplete.onSuccess();
+                            completionListener.onCompletion((jakarta.jms.Message) command);
                         }
                     }
                 });
@@ -1452,6 +1484,7 @@ public class ActiveMQConnection implements Connection, TopicConnection, QueueCon
             }
         }
     }
+
 
     private void forceCloseOnSecurityException(Throwable exception) {
         LOG.trace("force close on security exception:{}, transport={}", this, transport, exception);
