@@ -20,6 +20,7 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig;
 import org.jasypt.properties.PropertyValueEncryptionUtils;
 import org.jasypt.iv.RandomIvGenerator;
+import org.jasypt.util.password.ConfigurablePasswordEncryptor;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -28,6 +29,7 @@ import java.util.Properties;
  * Holds utility methods used work with encrypted values.
  */
 public class EncryptionSupport {
+    static private final String HASH_DELIMITER = ":";
 
     static public void decrypt(Properties props, String algorithm) {
         StandardPBEStringEncryptor encryptor = createEncryptor(algorithm);
@@ -56,4 +58,30 @@ public class EncryptionSupport {
         return encryptor;
     }
 
+    public static boolean comparePassword(String inputPassword, String encodedPassword) {
+        if (!isPasswordHashed(encodedPassword)) {
+            return inputPassword.equals(encodedPassword);
+        }
+        String algorithm = extractAlgorithm(encodedPassword);
+        String hashedPassword = extractPasswordHash(encodedPassword);
+        ConfigurablePasswordEncryptor passwordEncryptor = new ConfigurablePasswordEncryptor();
+        passwordEncryptor.setAlgorithm(algorithm);
+        passwordEncryptor.setPlainDigest(true);
+        return passwordEncryptor.checkPassword(inputPassword, hashedPassword);
+    }
+
+    private static String extractAlgorithm(String encodedPassword) {
+        int delimiter = encodedPassword.indexOf(HASH_DELIMITER);
+        return encodedPassword.substring(0, delimiter);
+    }
+
+    private static String extractPasswordHash(String encodedPassword) {
+        int delimiter = encodedPassword.indexOf(HASH_DELIMITER);
+        return encodedPassword.substring(delimiter + HASH_DELIMITER.length());
+    }
+
+    private static boolean isPasswordHashed(String encodedPassword) {
+        int delimiter = encodedPassword.indexOf(HASH_DELIMITER);
+        return delimiter != -1 && delimiter != 0;
+    }
 }
